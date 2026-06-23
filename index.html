@@ -274,7 +274,6 @@ tbody td { padding: 9px 16px; color: #374151; }
     <button class="section-dropdown-btn" id="dropdown-btn-acessorias">Análises Acessórias</button>
     <div class="section-dropdown-menu">
       <button class="section-dropdown-item" id="drop-ttfv" onclick="switchSection('ttfv')">TTFV — Time To First Value</button>
-      <button class="section-dropdown-item" id="drop-overlap" onclick="switchSection('overlap')">Overlap Engajamento × MRR</button>
       <button class="section-dropdown-item" id="drop-cohort" onclick="switchSection('cohort')">Coortes</button>
       <button class="section-dropdown-item" id="drop-contas" onclick="switchSection('contas')">Visão por Conta</button>
     </div>
@@ -552,30 +551,6 @@ tbody td { padding: 9px 16px; color: #374151; }
   </div>
 </div>
 
-<!-- ══════════════ OVERLAP SECTION ══════════════ -->
-<div id="section-overlap" class="panel">
-  <div class="content" style="padding-top:20px">
-    <div class="note note-blue" style="margin-top:0; margin-bottom:16px">
-      ℹ️ Overlap: quantas das contas ativas (MAA) naquele mês eram também assinantes com MRR naquele mesmo mês. Contas com acesso mas sem MRR merecem investigação — podem ser freemium, trials ou acessos por link externo.
-    </div>
-    <div class="kpi-row kpi-row-4" id="overlap-kpis"></div>
-    <div class="charts-grid grid-2" style="margin-top:16px">
-      <div class="chart-card wide2">
-        <div class="chart-header">
-          <div class="chart-header-text">
-            <div class="chart-title">MAA vs. Assinantes com MRR — por mês <i class="info-icon" onclick="showInfo('overlap-chart')">ℹ</i></div>
-            <div class="chart-sub">Comparação entre contas engajadas e contas pagantes</div>
-          </div>
-          <div class="type-toggle">
-            <button class="type-btn active" id="ol-btn-acesso" onclick="setOlType('acesso')">Acesso</button>
-            <button class="type-btn" id="ol-btn-uso" onclick="setOlType('uso')">Uso</button>
-          </div>
-        </div>
-        <canvas id="overlapChart" style="max-height:240px"></canvas>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- ══════════════ DEPTH SECTION ══════════════ -->
 <div id="section-depth" class="panel">
@@ -712,12 +687,12 @@ function switchSection(sec) {
   document.querySelectorAll('.section-btn').forEach((b,i) => b.classList.toggle('active', mainSecs[i]===sec));
 
   // Dropdown: highlight parent button if a dropdown item is active
-  const dropdownSecs = ['ttfv','overlap','cohort','contas'];
+  const dropdownSecs = ['ttfv','cohort','contas'];
   const dropdownBtn = document.getElementById('dropdown-btn-acessorias');
   if(dropdownBtn) dropdownBtn.classList.toggle('active', dropdownSecs.includes(sec));
 
   // Dropdown items
-  ['ttfv','overlap','cohort','contas'].forEach(s => {
+  ['ttfv','cohort','contas'].forEach(s => {
     const el = document.getElementById('drop-'+s);
     if(el) el.classList.toggle('active', s===sec);
   });
@@ -725,7 +700,6 @@ function switchSection(sec) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('section-'+sec).classList.add('active');
   if(sec==='mrr') renderMRR();
-  if(sec==='overlap') renderOverlap();
   if(sec==='depth') renderDepth();
   if(sec==='exec') renderExec();
   if(sec==='ttfv') buildTtfvSection();
@@ -2567,11 +2541,8 @@ renderEngagement();
 <div id="section-uso" class="panel">
   <div class="content" style="padding-top:20px">
 
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div>
-        <div style="font-size:18px;font-weight:700;color:#1a1a2e">GdP — Análise de Uso Completa</div>
-        <div style="font-size:12px;color:#9ca3af;margin-top:2px">316k eventos · Jan/2025 – Mai/2026 · base: assinantes ativos Mai/26</div>
-      </div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+      <span style="font-size:11px;color:#9ca3af">316k eventos · Jan/2025 – Jun/2026 · base: assinantes ativos Jun/26</span>
     </div>
 
     <!-- KPIs topo -->
