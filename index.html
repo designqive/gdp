@@ -12,6 +12,32 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 header { background: #1a1a2e; color: #fff; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
 header h1 { font-size: 19px; font-weight: 600; }
 header span { font-size: 12px; opacity: 0.5; }
+.strat-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 8px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s; letter-spacing: .02em; }
+.strat-btn:hover { background: rgba(255,255,255,0.18); }
+
+/* Strategy overlay */
+#strat-overlay { display: none; position: fixed; inset: 0; background: #f5f6fa; z-index: 10000; overflow-y: auto; }
+#strat-overlay.open { display: block; }
+.strat-panel { width: 100%; padding: 0 40px 60px; }
+.strat-header { background: #1a1a2e; color: #fff; padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; margin: 0 -40px 28px; }
+.strat-title { font-size: 17px; font-weight: 700; color: #fff; }
+.strat-sub { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 3px; }
+.strat-close { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s; }
+.strat-close:hover { background: rgba(255,255,255,0.18); }
+.strat-chart-wrap { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 28px 28px 20px; display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+.strat-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px; justify-content: center; }
+.strat-leg-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #374151; font-weight: 500; }
+.strat-leg-line { width: 28px; height: 3px; border-radius: 2px; }
+.strat-leg-dash { width: 28px; height: 0; border-top: 2.5px dashed currentColor; }
+.strat-table-wrap { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; }
+.strat-table-title { font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 14px; }
+.strat-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
+.strat-table th { text-align: left; color: #6b7280; font-weight: 700; padding: 8px 12px; border-bottom: 2px solid #e5e7eb; white-space: nowrap; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+.strat-table th:first-child { width: 52px; }
+.strat-table td { padding: 9px 12px; color: #374151; border-bottom: 1px solid #f3f4f6; vertical-align: top; line-height: 1.45; font-size: 11.5px; }
+.strat-table tr:last-child td { border-bottom: none; }
+.strat-table tr:hover td { background: #f9fafb; }
+.strat-table .lvl { font-weight: 700; color: #9ca3af; font-size: 10px; white-space: nowrap; background: #f3f4f6; border-radius: 4px; padding: 2px 6px; }
 
 /* Section switcher */
 .section-bar { display: flex; background: #fff; border-bottom: 1px solid #e5e7eb; padding: 0 32px; align-items: stretch; }
@@ -197,11 +223,23 @@ tbody td { padding: 9px 16px; color: #374151; }
 
 <script>
 (function(){
-  const CORRECT = '200990';
+  // PIN armazenado como hash SHA-256 — o código original não aparece aqui
+  const HASH = '74b1c890fc0cc00c0a7fcaacd42857519689f905837bfec7a079d6783e6ca743';
+  const SESSION_KEY = 'gdp_auth_v2';
   let entered = '';
-  if(sessionStorage.getItem('gdp_auth') === CORRECT){
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  sha256(sessionStorage.getItem(SESSION_KEY) || '').then(h => {
+    // sessão já validada: guarda o hash da tentativa anterior
+  });
+  if(sessionStorage.getItem(SESSION_KEY) === HASH){
     document.getElementById('pin-screen').classList.add('hidden');
   }
+
   function updateDots(){
     for(let i=0;i<6;i++){
       const d = document.getElementById('pd'+i);
@@ -224,9 +262,10 @@ tbody td { padding: 9px 16px; color: #374151; }
     entered = '';
     updateDots();
   };
-  function checkPin(){
-    if(entered === CORRECT){
-      sessionStorage.setItem('gdp_auth', CORRECT);
+  async function checkPin(){
+    const h = await sha256(entered);
+    if(h === HASH){
+      sessionStorage.setItem(SESSION_KEY, HASH);
       document.getElementById('pin-screen').classList.add('hidden');
     } else {
       for(let i=0;i<6;i++) document.getElementById('pd'+i).classList.add('error');
@@ -259,8 +298,117 @@ tbody td { padding: 9px 16px; color: #374151; }
 
 <header>
   <h1>📊 Dashboard — Gestão de Pagamentos</h1>
-  <span>Jan/2025 – Mai/2026</span>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span>Jan/2025 – Jun/2026</span>
+    <button class="strat-btn" onclick="openStrat()">🎯 Estratégia</button>
+  </div>
 </header>
+
+<!-- ══════════════ STRATEGY OVERLAY ══════════════ -->
+<div id="strat-overlay" onclick="if(event.target===this)closeStrat()">
+  <div class="strat-panel">
+    <div class="strat-header">
+      <div>
+        <div class="strat-title">Estratégia de Produto — Gestão de Pagamentos</div>
+        <div class="strat-sub">Posicionamento estratégico por dimensão · escala 0–5</div>
+      </div>
+      <button class="strat-close" onclick="closeStrat()">✕</button>
+    </div>
+
+    <!-- Radar -->
+    <div class="strat-chart-wrap">
+      <canvas id="stratRadar" style="max-height:500px;width:100%;max-width:700px"></canvas>
+      <div class="strat-legend">
+        <div class="strat-leg-item"><div class="strat-leg-line" style="background:#94a3b8"></div>2025</div>
+        <div class="strat-leg-item"><div class="strat-leg-line" style="background:#3b82f6"></div>Q1/2026</div>
+        <div class="strat-leg-item"><div class="strat-leg-line" style="background:#10b981"></div>Q2/2026</div>
+        <div class="strat-leg-item" style="color:#f59e0b"><div class="strat-leg-dash" style="border-color:#f59e0b"></div>Q3/2026 (Planejado)</div>
+        <div class="strat-leg-item" style="color:#a78bfa"><div class="strat-leg-dash" style="border-color:#a78bfa"></div>Q4/2026</div>
+      </div>
+    </div>
+
+    <!-- Níveis reference table — full width below radar -->
+    <div class="strat-table-wrap">
+      <div class="strat-table-title">Referência de Níveis por Dimensão</div>
+      <table class="strat-table">
+        <thead>
+          <tr>
+            <th>Nível</th>
+            <th>Requisição e pedido</th>
+            <th>Recebimento de Documentos</th>
+            <th>Associação e conferência</th>
+            <th>Aprovação e organização</th>
+            <th>Pagamentos</th>
+            <th>Reconciliação e Auditoria</th>
+            <th>Segurança</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="lvl">N0</span></td>
+            <td>Não estruturado na plataforma</td>
+            <td>Documentos fora da plataforma</td>
+            <td>Sem associação entre documentos</td>
+            <td>Lista simples de pagamentos</td>
+            <td>Pagamento fora da plataforma</td>
+            <td>Sem rastreabilidade estruturada</td>
+            <td>Sem fluxo de segurança aplicado</td>
+          </tr>
+          <tr>
+            <td><span class="lvl">N1</span></td>
+            <td>Registro manual de pedidos</td>
+            <td>Captura automática de boletos</td>
+            <td>Associação manual boleto ↔ NF</td>
+            <td>Visualização unificada</td>
+            <td>Pagamento manual via CNAB</td>
+            <td>Comprovantes e exportação de dados</td>
+            <td>Permissionamento mínimo</td>
+          </tr>
+          <tr>
+            <td><span class="lvl">N2</span></td>
+            <td>Pedido vinculado ao documento esperado</td>
+            <td>CAP a partir de NFs e NFSes</td>
+            <td>Associação automática boleto ↔ doc</td>
+            <td>Workflow de aprovação básico</td>
+            <td>Pagamento pela plataforma · 6 bancos</td>
+            <td>Dashboard de acompanhamento de boletos</td>
+            <td>Travas de criação e movimentação de CAPs</td>
+          </tr>
+          <tr>
+            <td><span class="lvl">N3</span></td>
+            <td>Pedido gera obrigação financeira esperada</td>
+            <td>Integração com ERP · criação de CAPs</td>
+            <td>Sinalização automática de divergências</td>
+            <td>Automações na Gestão de pagamentos</td>
+            <td>Operação financeira integrada ao ERP</td>
+            <td>Painel de performance</td>
+            <td>Score de Risco Qive</td>
+          </tr>
+          <tr>
+            <td><span class="lvl">N4</span></td>
+            <td>Integração com ERP para pedidos</td>
+            <td>Regras parametrizáveis para CAPs</td>
+            <td>Validação cruzada com ERP</td>
+            <td>Categorização via Etiquetas (CAP)</td>
+            <td>Amplo suporte de bancos</td>
+            <td>Confirmação automática do pagamento</td>
+            <td>Registro detalhado de todas as ações</td>
+          </tr>
+          <tr>
+            <td><span class="lvl">N5</span></td>
+            <td>Pedido integrado ao CAP</td>
+            <td>CTe · Utilities · Impostos e doc. específicos</td>
+            <td>Cobertura ampliada de associações</td>
+            <td>Workflow de aprovação avançado</td>
+            <td>Pagamentos via Pix e TED</td>
+            <td>Compliance · Reforma Tributária</td>
+            <td>Autenticação de 2 fatores</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
 <!-- Section switcher -->
 <div class="section-bar">
@@ -270,12 +418,12 @@ tbody td { padding: 9px 16px; color: #374151; }
   <button class="section-btn" onclick="switchSection('mrr')">Receita</button>
   <button class="section-btn" onclick="switchSection('depth')">Profundidade</button>
   <button class="section-btn" onclick="switchSection('churn')">Churn</button>
+  <button class="section-btn" onclick="switchSection('contas')">Visão por Conta</button>
   <div class="section-dropdown">
     <button class="section-dropdown-btn" id="dropdown-btn-acessorias">Análises Acessórias</button>
     <div class="section-dropdown-menu">
       <button class="section-dropdown-item" id="drop-ttfv" onclick="switchSection('ttfv')">TTFV — Time To First Value</button>
       <button class="section-dropdown-item" id="drop-cohort" onclick="switchSection('cohort')">Coortes</button>
-      <button class="section-dropdown-item" id="drop-contas" onclick="switchSection('contas')">Visão por Conta</button>
     </div>
   </div>
 </div>
@@ -682,17 +830,17 @@ function destroy(ids) { ids.forEach(id => { if(charts[id]){charts[id].destroy();
 
 // ─── SECTION SWITCHING ──────────────────────────────────
 function switchSection(sec) {
-  // Main nav buttons (exec, engagement, uso, mrr, depth, churn)
-  const mainSecs = ['exec','engagement','uso','mrr','depth','churn'];
+  // Main nav buttons (exec, engagement, uso, mrr, depth, churn, contas)
+  const mainSecs = ['exec','engagement','uso','mrr','depth','churn','contas'];
   document.querySelectorAll('.section-btn').forEach((b,i) => b.classList.toggle('active', mainSecs[i]===sec));
 
   // Dropdown: highlight parent button if a dropdown item is active
-  const dropdownSecs = ['ttfv','cohort','contas'];
+  const dropdownSecs = ['ttfv','cohort'];
   const dropdownBtn = document.getElementById('dropdown-btn-acessorias');
   if(dropdownBtn) dropdownBtn.classList.toggle('active', dropdownSecs.includes(sec));
 
   // Dropdown items
-  ['ttfv','cohort','contas'].forEach(s => {
+  ['ttfv','cohort'].forEach(s => {
     const el = document.getElementById('drop-'+s);
     if(el) el.classList.toggle('active', s===sec);
   });
@@ -3619,7 +3767,97 @@ function closeAccountDrawer() {
   document.getElementById('acct-drawer').style.display = 'none';
 }
 
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeAccountDrawer(); });
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape') { closeAccountDrawer(); closeStrat(); }
+});
+
+// Renderiza a aba inicial após todos os recursos (Chart.js) estarem carregados
+window.addEventListener('load', function() {
+  renderExec();
+});
+
+// ─── STRATEGY OVERLAY ────────────────────────────────────────────────
+let stratChart = null;
+
+const STRAT_DATA = {
+  labels: [
+    'Requisição\ne pedido',
+    'Recebimento\nde Documentos',
+    'Associação\ne conferência',
+    'Aprovação\ne organização',
+    'Pagamentos',
+    'Reconciliação\ne Auditoria',
+    'Segurança'
+  ],
+  quarters: [
+    { label: '2025',              data: [1,1,3,1,1,2,0], solid: true,  color: '#94a3b8' },
+    { label: 'Q1/2026',           data: [1,2,3,2,1,2,1], solid: true,  color: '#3b82f6' },
+    { label: 'Q2/2026',           data: [1,2,3,3,2,4,1], solid: true,  color: '#10b981' },
+    { label: 'Q3/2026 (Plan.)',   data: [1,3,4,3,3,5,2], solid: false, color: '#f59e0b' },
+    { label: 'Q4/2026',           data: [1,4,4,4,4,5,3], solid: false, color: '#a78bfa' },
+  ]
+};
+
+function buildStratChart() {
+  if(stratChart) { stratChart.destroy(); stratChart = null; }
+  const ctx = document.getElementById('stratRadar').getContext('2d');
+  stratChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: STRAT_DATA.labels,
+      datasets: STRAT_DATA.quarters.map(q => ({
+        label: q.label,
+        data: q.data,
+        borderColor: q.color,
+        backgroundColor: q.solid ? q.color + '18' : 'transparent',
+        borderWidth: q.solid ? 2.5 : 2,
+        borderDash: q.solid ? [] : [6, 4],
+        pointBackgroundColor: q.color,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      }))
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: Nível ${ctx.raw}`
+          }
+        }
+      },
+      scales: {
+        r: {
+          min: 0, max: 5,
+          ticks: {
+            stepSize: 1,
+            color: '#9ca3af',
+            font: { size: 10 },
+            backdropColor: 'transparent',
+          },
+          grid: { color: '#e5e7eb' },
+          angleLines: { color: '#e5e7eb' },
+          pointLabels: {
+            color: '#374151',
+            font: { size: 12, weight: '600' },
+          }
+        }
+      }
+    }
+  });
+}
+
+function openStrat() {
+  document.getElementById('strat-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(buildStratChart, 50);
+}
+
+function closeStrat() {
+  document.getElementById('strat-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
 </script>
 
 </body>
