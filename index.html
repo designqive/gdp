@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — Gestão de Pagamentos</title>
+<title>Gestão de Pagamentos - Performance</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,6 +14,35 @@ header h1 { font-size: 19px; font-weight: 600; }
 header span { font-size: 12px; opacity: 0.5; }
 .strat-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 8px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s; letter-spacing: .02em; }
 .strat-btn:hover { background: rgba(255,255,255,0.18); }
+.version-badge { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; letter-spacing: .03em; }
+.version-badge:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+/* Changelog modal */
+#changelog-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:20000; align-items:center; justify-content:center; }
+#changelog-modal.open { display:flex; }
+.changelog-card { background:#fff; border-radius:16px; width:min(680px,92vw); max-height:82vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.2); }
+.changelog-header { padding:24px 28px 16px; border-bottom:1px solid #f3f4f6; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:#fff; z-index:1; }
+.changelog-header h2 { font-size:16px; font-weight:700; color:#1a1a2e; }
+.changelog-header p { font-size:12px; color:#9ca3af; margin-top:2px; }
+.changelog-close { background:none; border:none; font-size:20px; color:#9ca3af; cursor:pointer; line-height:1; padding:4px; }
+.changelog-close:hover { color:#1a1a2e; }
+.changelog-body { padding:20px 28px 28px; display:flex; flex-direction:column; gap:20px; }
+.cl-entry { display:flex; gap:16px; }
+.cl-version-col { display:flex; flex-direction:column; align-items:center; gap:0; flex-shrink:0; width:48px; }
+.cl-vbadge { background:#1a1a2e; color:#fff; border-radius:6px; padding:3px 7px; font-size:10px; font-weight:700; white-space:nowrap; }
+.cl-line { width:2px; background:#e5e7eb; flex:1; margin-top:4px; min-height:20px; }
+.cl-content { flex:1; padding-bottom:4px; }
+.cl-meta { display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+.cl-date { font-size:11px; color:#9ca3af; }
+.cl-author { font-size:11px; color:#6b7280; font-weight:600; background:#f3f4f6; border-radius:4px; padding:1px 7px; }
+.cl-changes { display:flex; flex-direction:column; gap:5px; }
+.cl-change { display:flex; align-items:flex-start; gap:8px; font-size:12px; color:#374151; line-height:1.45; }
+.cl-tag { font-size:9px; font-weight:700; border-radius:4px; padding:2px 6px; white-space:nowrap; flex-shrink:0; margin-top:1px; text-transform:uppercase; letter-spacing:.04em; }
+.cl-tag.dados    { background:#dbeafe; color:#1d4ed8; }
+.cl-tag.ux       { background:#f3e8ff; color:#7c3aed; }
+.cl-tag.analise  { background:#d1fae5; color:#065f46; }
+.cl-tag.seguranca{ background:#fee2e2; color:#991b1b; }
+.cl-tag.infra    { background:#fef3c7; color:#92400e; }
 
 /* Strategy overlay */
 #strat-overlay { display: none; position: fixed; inset: 0; background: #f5f6fa; z-index: 10000; overflow-y: auto; }
@@ -297,12 +326,115 @@ tbody td { padding: 9px 16px; color: #374151; }
 </div>
 
 <header>
-  <h1>📊 Dashboard — Gestão de Pagamentos</h1>
+  <h1>Gestão de Pagamentos · Performance</h1>
   <div style="display:flex;align-items:center;gap:16px">
     <span>Jan/2025 – Jun/2026</span>
+    <button class="version-badge" onclick="openChangelog()">v2.0</button>
     <button class="strat-btn" onclick="openStrat()">🎯 Estratégia</button>
   </div>
 </header>
+
+<!-- ══════════════ CHANGELOG MODAL ══════════════ -->
+<div id="changelog-modal" onclick="if(event.target===this)closeChangelog()">
+  <div class="changelog-card">
+    <div class="changelog-header">
+      <div>
+        <h2>Changelog</h2>
+        <p>Histórico de versões do dashboard</p>
+      </div>
+      <button class="changelog-close" onclick="closeChangelog()">✕</button>
+    </div>
+    <div class="changelog-body">
+
+      <div class="cl-entry">
+        <div class="cl-version-col"><span class="cl-vbadge">v2.0</span><div class="cl-line"></div></div>
+        <div class="cl-content">
+          <div class="cl-meta"><span class="cl-date">23/06/2026</span><span class="cl-author">Arthur Silva</span></div>
+          <div class="cl-changes">
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Radar estratégico de produto com visão por quarter (sólido = realizado, pontilhado = planejado)</div>
+            <div class="cl-change"><span class="cl-tag infra">Infra</span>Publicação via GitHub Pages com script de deploy automatizado</div>
+            <div class="cl-change"><span class="cl-tag seguranca">Segurança</span>PIN de acesso com hash SHA-256 — código não exposto no fonte</div>
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Visão por Conta movida para barra de navegação principal</div>
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Título renomeado para "Gestão de Pagamentos · Performance"</div>
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Changelog e versionamento do dashboard</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cl-entry">
+        <div class="cl-version-col"><span class="cl-vbadge">v1.6</span><div class="cl-line"></div></div>
+        <div class="cl-content">
+          <div class="cl-meta"><span class="cl-date">20/06/2026</span><span class="cl-author">Arthur Silva</span></div>
+          <div class="cl-changes">
+            <div class="cl-change"><span class="cl-tag analise">Análise</span>Drawer de detalhe da conta com histórico mensal por funcionalidade e eventos cronológicos</div>
+            <div class="cl-change"><span class="cl-tag dados">Dados</span>Coluna de tendência refatorada com média móvel de 3 meses (Mar–Mai/26), excluindo meses pré-assinatura</div>
+            <div class="cl-change"><span class="cl-tag dados">Dados</span>Data de assinatura exibida no drawer (MM/AAAA)</div>
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Sumário Executivo definido como aba padrão de abertura</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cl-entry">
+        <div class="cl-version-col"><span class="cl-vbadge">v1.5</span><div class="cl-line"></div></div>
+        <div class="cl-content">
+          <div class="cl-meta"><span class="cl-date">18/06/2026</span><span class="cl-author">Arthur Silva</span></div>
+          <div class="cl-changes">
+            <div class="cl-change"><span class="cl-tag analise">Análise</span>Score de risco multidimensional 0–100 (Recência 30pts + Frequência 25pts + Volume 25pts + Profundidade 20pts)</div>
+            <div class="cl-change"><span class="cl-tag analise">Análise</span>Matriz de ações sugeridas: Acionar CS urgente · Reengajamento · Aprofundar uso · Acompanhar · Manter e expandir</div>
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Badge de risco com score no hover e filtros de ação atualizados</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cl-entry">
+        <div class="cl-version-col"><span class="cl-vbadge">v1.4</span><div class="cl-line"></div></div>
+        <div class="cl-content">
+          <div class="cl-meta"><span class="cl-date">15/06/2026</span><span class="cl-author">Arthur Silva</span></div>
+          <div class="cl-changes">
+            <div class="cl-change"><span class="cl-tag dados">Dados</span>Atualização para Jun/2026 com recálculo de tendência e ações sugeridas</div>
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Coluna de bolinhas de atividade mensal 2026 (Jan–Jun)</div>
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Colunas de funcionalidade com data de último uso e indicador colorido</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cl-entry">
+        <div class="cl-version-col"><span class="cl-vbadge">v1.3</span><div class="cl-line"></div></div>
+        <div class="cl-content">
+          <div class="cl-meta"><span class="cl-date">10/06/2026</span><span class="cl-author">Arthur Silva</span></div>
+          <div class="cl-changes">
+            <div class="cl-change"><span class="cl-tag analise">Análise</span>Gráfico de Churn Rate × TTFV com análise de correlação</div>
+            <div class="cl-change"><span class="cl-tag analise">Análise</span>Benchmarks externos: KeyBanc 2025 e Amplitude — correlações com dados GdP</div>
+            <div class="cl-change"><span class="cl-tag analise">Análise</span>Coortes de ativação e curva de TTFV</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cl-entry">
+        <div class="cl-version-col"><span class="cl-vbadge">v1.2</span><div class="cl-line"></div></div>
+        <div class="cl-content">
+          <div class="cl-meta"><span class="cl-date">05/06/2026</span><span class="cl-author">Arthur Silva</span></div>
+          <div class="cl-changes">
+            <div class="cl-change"><span class="cl-tag analise">Análise</span>Sumário Executivo com KPIs consolidados, distribuição de risco, jornada de adoção e MAA</div>
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Visão por Conta com tabela filtrada por ação sugerida, risco e jornada</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cl-entry">
+        <div class="cl-version-col"><span class="cl-vbadge">v1.0</span></div>
+        <div class="cl-content">
+          <div class="cl-meta"><span class="cl-date">01/06/2026</span><span class="cl-author">Arthur Silva</span></div>
+          <div class="cl-changes">
+            <div class="cl-change"><span class="cl-tag dados">Dados</span>Dashboard inicial com abas de Stickiness, Engajamento, Receita, Profundidade e Churn</div>
+            <div class="cl-change"><span class="cl-tag dados">Dados</span>Base de 316k eventos · Jan/2025 – Mai/2026 · portfólio de assinantes ativos</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <!-- ══════════════ STRATEGY OVERLAY ══════════════ -->
 <div id="strat-overlay" onclick="if(event.target===this)closeStrat()">
@@ -3768,7 +3900,7 @@ function closeAccountDrawer() {
 }
 
 document.addEventListener('keydown', e => {
-  if(e.key==='Escape') { closeAccountDrawer(); closeStrat(); }
+  if(e.key==='Escape') { closeAccountDrawer(); closeStrat(); closeChangelog(); }
 });
 
 // Renderiza a aba inicial após todos os recursos (Chart.js) estarem carregados
@@ -3846,6 +3978,13 @@ function buildStratChart() {
       }
     }
   });
+}
+
+function openChangelog() {
+  document.getElementById('changelog-modal').classList.add('open');
+}
+function closeChangelog() {
+  document.getElementById('changelog-modal').classList.remove('open');
 }
 
 function openStrat() {
