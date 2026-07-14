@@ -347,6 +347,21 @@ tbody td { padding: 9px 16px; color: #374151; white-space: nowrap; }
     <div class="changelog-body">
 
       <div class="cl-entry">
+        <div class="cl-version-col"><span class="cl-vbadge">v2.6</span><div class="cl-line"></div></div>
+        <div class="cl-content">
+          <div class="cl-meta"><span class="cl-date">14/07/2026</span><span class="cl-author">Arthur Silva</span></div>
+          <div class="cl-changes">
+            <div class="cl-change"><span class="cl-tag fix">Fix</span>TTFV corrigido — <code>ttfvSeg</code> e <code>ttfvView</code> não eram inicializados; primeira abertura da aba gerava TypeError e travava a seção inteira</div>
+            <div class="cl-change"><span class="cl-tag analise">Análise</span>Nova aba <b>Funil de Adoção</b> em Análises Acessórias — funil acumulado (vida toda) com 4 etapas: assinantes ativos → boletos capturados → acesso → uso; 4 KPIs, gráfico de barras horizontal e tabela de conversão entre etapas</div>
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Visão por Conta — 7 novas colunas de dados operacionais: Emp. ativas, Emp. c/ boletos, % cobertura, Vol. 60d, Vol. 180d, Vlr. méd. 60d, Vlr. méd. 180d; todas ordenáveis; tabela com scroll horizontal</div>
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Drawer de conta — nova aba <b>Detalhes por empresas</b> com tabela por CNPJ (total de boletos e valor médio), ordenada por volume desc</div>
+            <div class="cl-change"><span class="cl-tag dados">Dados</span>Novas bases integradas: <code>base_assinantes_total_empresas.csv</code> (cobertura DDA 724→1.220 contas), <code>base_volumetria_boletos.csv</code> (volumetria mensal por conta, Out/23–Jul/26), <code>base_boletos_por_cnpj.csv</code> (26.6k CNPJs com boletos)</div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="cl-entry">
         <div class="cl-version-col"><span class="cl-vbadge">v2.5</span><div class="cl-line"></div></div>
         <div class="cl-content">
           <div class="cl-meta"><span class="cl-date">24/06/2026</span><span class="cl-author">Arthur Silva</span></div>
