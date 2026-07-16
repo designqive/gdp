@@ -329,7 +329,7 @@ tbody td { padding: 9px 16px; color: #374151; white-space: nowrap; }
   <h1>Gestão de Pagamentos · Performance</h1>
   <div style="display:flex;align-items:center;gap:16px">
     <span>Jan/2025 – Jun/2026</span>
-    <button class="version-badge" onclick="openChangelog()">v2.5</button>
+    <button class="version-badge" onclick="openChangelog()">v2.7</button>
     <button class="strat-btn" onclick="openStrat()">🎯 Estratégia</button>
   </div>
 </header>
@@ -345,6 +345,19 @@ tbody td { padding: 9px 16px; color: #374151; white-space: nowrap; }
       <button class="changelog-close" onclick="closeChangelog()">✕</button>
     </div>
     <div class="changelog-body">
+
+      <div class="cl-entry">
+        <div class="cl-version-col"><span class="cl-vbadge">v2.7</span><div class="cl-line"></div></div>
+        <div class="cl-content">
+          <div class="cl-meta"><span class="cl-date">16/07/2026</span><span class="cl-author">Arthur Silva</span></div>
+          <div class="cl-changes">
+            <div class="cl-change"><span class="cl-tag dados">Dados</span>Nova base integrada: <code>base_portfolio_csm_limpa.csv</code> — 25 CSMs, cobertura de 1.250/1.297 contas ativas; base deduplicada (21 duplicatas resolvidas: 9 pura/vazio removidas automaticamente, 9 conflitos resolvidos manualmente)</div>
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Drawer de conta — substituído AE/CX por <b>CSM responsável</b> no cabeçalho do perfil</div>
+            <div class="cl-change"><span class="cl-tag ux">UX</span>Visão por Conta — novo filtro <b>multi-select de CSM</b> ao lado do campo de busca; selecione um ou mais CSMs para filtrar a tabela; label dinâmico indica seleção ativa</div>
+          </div>
+        </div>
+      </div>
+
 
       <div class="cl-entry">
         <div class="cl-version-col"><span class="cl-vbadge">v2.6</span><div class="cl-line"></div></div>
