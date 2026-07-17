@@ -7591,7 +7591,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') { closeDashMo
 
 <!-- Account Detail Drawer -->
 <div id="acct-drawer-overlay" onclick="closeAccountDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.2);z-index:1000"></div>
-<div id="acct-drawer" style="display:none;position:fixed;top:0;right:0;bottom:0;width:480px;background:var(--bg,#fff);border-left:1px solid #e5e7eb;z-index:1001;flex-direction:column;overflow:hidden">
+<div id="acct-drawer" style="display:none;position:fixed;top:0;right:0;bottom:0;width:min(960px,90vw);background:var(--bg,#fff);border-left:1px solid #e5e7eb;z-index:1001;flex-direction:column;overflow:hidden">
 
   <!-- CABEÇALHO -->
   <div style="padding:16px 20px 14px;border-bottom:1px solid #e5e7eb;flex-shrink:0">
