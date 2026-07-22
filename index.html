@@ -3290,6 +3290,17 @@ function renderUso() {
         <button onclick="openContasInfo()" title="Legenda das colunas"
           style="width:30px;height:30px;border-radius:50%;border:1.5px solid #d1d5db;background:#fff;cursor:pointer;font-size:15px;color:#6b7280;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s,color .15s"
           onmouseover="this.style.borderColor='#1a1a2e';this.style.color='#1a1a2e'" onmouseout="this.style.borderColor='#d1d5db';this.style.color='#6b7280'">ℹ</button>
+        <div style="position:relative;flex-shrink:0">
+          <button id="export-btn" onclick="document.getElementById('export-menu').style.display=document.getElementById('export-menu').style.display==='block'?'none':'block'" title="Exportar lista de contas"
+            style="height:30px;padding:0 12px;border-radius:8px;border:1.5px solid #d1d5db;background:#fff;cursor:pointer;font-size:12px;color:#374151;display:flex;align-items:center;gap:5px;transition:border-color .15s"
+            onmouseover="this.style.borderColor='#1a1a2e'" onmouseout="this.style.borderColor='#d1d5db'">
+            <span style="font-size:13px">⬇</span> Exportar
+          </button>
+          <div id="export-menu" style="display:none;position:absolute;right:0;top:36px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:200;min-width:130px;overflow:hidden">
+            <div onclick="exportContas('csv');document.getElementById('export-menu').style.display='none'" style="padding:10px 16px;cursor:pointer;font-size:13px;color:#374151" onmouseenter="this.style.background='#f9fafb'" onmouseleave="this.style.background=''">📄 CSV</div>
+            <div onclick="exportContas('xlsx');document.getElementById('export-menu').style.display='none'" style="padding:10px 16px;cursor:pointer;font-size:13px;color:#374151;border-top:1px solid #f3f4f6" onmouseenter="this.style.background='#f9fafb'" onmouseleave="this.style.background=''">📊 Excel (.xlsx)</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -3456,6 +3467,7 @@ const ACCOUNT_DEPT = {"290621":[{"dept":"FINANCEIRO","events":940},{"dept":"NÃO
 // ── STATE ─────────────────────────────────────────────────
 const _contasFilters = {seg:'all', risco:'all', jornada:'all', acao:'all'};
 let _contasSort = {col:'mrr', dir:-1};
+let _lastFilteredContas = [];
 let _contasRendered = false;
 
 // ── HELPERS ───────────────────────────────────────────────
@@ -7314,6 +7326,7 @@ function renderContas() {
   });
 
   const tbody = document.getElementById('contas-tbody');
+  _lastFilteredContas = rows;
   tbody.innerHTML = rows.slice(0,500).map(r => `
     <tr onclick="openAccountDrawer('${r.id}')" style="cursor:pointer">
       <td style="font-family:monospace;font-size:11px;color:#6b7280;text-align:center">${r.id}</td>
@@ -7673,6 +7686,77 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') { closeDashMo
 const FEAT_LABELS = {boletos:'Boletos',danfe:'DANFE',cap:'CAP',pago:'PAGO',xlsx:'Exportou',painel:'Painel'};
 const FEAT_COLORS = {boletos:'#16a34a',danfe:'#7c3aed',cap:'#2563eb',pago:'#ea580c',xlsx:'#374151',painel:'#0891b2'};
 const FEAT_BG    = {boletos:'#f0fdf4',danfe:'#faf5ff',cap:'#eff6ff',pago:'#fff7ed',xlsx:'#f3f4f6',painel:'#ecfeff'};
+
+
+function exportContas(fmt) {
+  const data = _lastFilteredContas;
+  if (!data || data.length === 0) { alert('Nenhuma conta para exportar.'); return; }
+
+  const headers = [
+    'Conta','Segmento','MRR','Risco','Último uso',
+    'Ev/mês','Quartil','Meses','Jornada',
+    'Boletos','DANFE','Exportou','CAP','Pago',
+    'Jun/26','Tendência','Ação sugerida',
+    'Emp. ativas','Emp. c/ boletos','% cobertura',
+    'Vol. 60d','Vol. 180d','Vlr. méd. 60d','Vlr. méd. 180d',
+    'CSM'
+  ];
+
+  const getRow = r => {
+    const b = CONTAS_BOLETOS[r.id] || {};
+    const ea  = b.ea != null ? b.ea : '';
+    const eb  = b.eb != null ? b.eb : '';
+    const cob = (b.ea > 0 && b.eb != null) ? (b.eb / b.ea * 100).toFixed(1) + '%' : '';
+    const v6  = b.v6  != null ? Math.round(b.v6)  : '';
+    const v18 = b.v18 != null ? Math.round(b.v18) : '';
+    const p6  = b.p6  != null ? Math.round(b.p6)  : '';
+    const p18 = b.p18 != null ? Math.round(b.p18) : '';
+    return [
+      r.id, r.seg, r.mrr, r.risco, r.ultimo_acesso,
+      r.ev_mes, r.quartil, r.meses, r.jornada,
+      r.boletos||'', r.danfe||'', r.xlsx||'', r.cap||'', r.pago||'',
+      r.ev_jun != null ? r.ev_jun : '', r.tendencia, r.acao,
+      ea, eb, cob, v6, v18, p6, p18,
+      CONTAS_CSM[r.id] || ''
+    ];
+  };
+
+  const filename = 'contas_' + new Date().toISOString().slice(0,10);
+
+  if (fmt === 'csv') {
+    const escape = v => {
+      const s = String(v ?? '');
+      return (s.includes(',') || s.includes('"') || s.includes('\n'))
+        ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+    const lines = [headers.map(escape).join(',')];
+    data.forEach(r => lines.push(getRow(r).map(escape).join(',')));
+    const blob = new Blob(['\uFEFF' + lines.join('\n')], {type: 'text/csv;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename + '.csv';
+    a.click();
+
+  } else if (fmt === 'xlsx') {
+    const doExport = () => {
+      const wsData = [headers, ...data.map(getRow)];
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      // Column widths
+      ws['!cols'] = headers.map((h, i) => ({wch: [6,10,8,7,10,7,7,6,12,8,7,8,6,7,6,6,18,10,12,10,8,8,12,12,18][i] || 12}));
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Contas');
+      XLSX.writeFile(wb, filename + '.xlsx');
+    };
+    if (window.XLSX) {
+      doExport();
+    } else {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload = doExport;
+      document.head.appendChild(s);
+    }
+  }
+}
 
 function switchDrawerTab(tab) {
   ['uso','usuarios','empresas'].forEach(t => {
@@ -8230,5 +8314,12 @@ function closeStrat() {
 }
 </script>
 
+document.addEventListener('click', function(e){
+  const menu = document.getElementById('export-menu');
+  const btn  = document.getElementById('export-btn');
+  if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+    menu.style.display = 'none';
+  }
+});
 </body>
 </html>
