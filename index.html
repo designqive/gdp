@@ -558,8 +558,8 @@ tbody td { padding: 9px 16px; color: #374151; white-space: nowrap; }
         <div class="strat-leg-item"><div class="strat-leg-line" style="background:#94a3b8"></div>2025</div>
         <div class="strat-leg-item"><div class="strat-leg-line" style="background:#3b82f6"></div>Q1/2026</div>
         <div class="strat-leg-item"><div class="strat-leg-line" style="background:#10b981"></div>Q2/2026</div>
-        <div class="strat-leg-item" style="color:#f59e0b"><div class="strat-leg-dash" style="border-color:#f59e0b"></div>Q3/2026 (Planejado)</div>
-        <div class="strat-leg-item" style="color:#a78bfa"><div class="strat-leg-dash" style="border-color:#a78bfa"></div>Q4/2026</div>
+        <div class="strat-leg-item"><div class="strat-leg-line" style="background:#f59e0b"></div>Q3/2026</div>
+        <div class="strat-leg-item" style="color:#a78bfa"><div class="strat-leg-dash" style="border-color:#a78bfa"></div>Q4/2026 (Proposta)</div>
       </div>
     </div>
 
@@ -570,75 +570,75 @@ tbody td { padding: 9px 16px; color: #374151; white-space: nowrap; }
         <thead>
           <tr>
             <th>Nível</th>
-            <th>Requisição e pedido</th>
-            <th>Recebimento de Documentos</th>
-            <th>Associação e conferência</th>
-            <th>Aprovação e organização</th>
-            <th>Pagamentos</th>
-            <th>Reconciliação e Auditoria</th>
-            <th>Segurança</th>
+            <th>Formação e cobertura da obrigação</th>
+            <th>Associação e validação</th>
+            <th>Organização e priorização</th>
+            <th>Aprovação e autorização</th>
+            <th>Execução financeira</th>
+            <th>Liquidação, conciliação e auditoria</th>
+            <th>Reforma Tributária</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><span class="lvl">N0</span></td>
-            <td>Não estruturado na plataforma</td>
-            <td>Documentos fora da plataforma</td>
-            <td>Sem associação entre documentos</td>
-            <td>Lista simples de pagamentos</td>
+            <td>Obrigações e documentos financeiros fora da Qive</td>
+            <td>Sem vínculo estruturado entre documentos e obrigação</td>
+            <td>Controle da operação fora da Qive</td>
+            <td>Aprovação e autorização fora da Qive</td>
             <td>Pagamento fora da plataforma</td>
-            <td>Sem rastreabilidade estruturada</td>
-            <td>Sem fluxo de segurança aplicado</td>
+            <td>Sem fechamento e rastreabilidade estruturados</td>
+            <td>Jornada financeira sem contexto tributário</td>
           </tr>
           <tr>
             <td><span class="lvl">N1</span></td>
-            <td>Registro manual de pedidos</td>
-            <td>Captura automática de boletos</td>
-            <td>Associação manual boleto ↔ NF</td>
-            <td>Visualização unificada</td>
+            <td>Captura de boletos e documentos financeiros</td>
+            <td>Associação manual boleto ↔ documento fiscal</td>
+            <td>Visão unificada com filtros e status básicos</td>
+            <td>Permissionamento mínimo para aprovar e pagar</td>
             <td>Pagamento manual via CNAB</td>
-            <td>Comprovantes e exportação de dados</td>
-            <td>Permissionamento mínimo</td>
+            <td>Captura e upload de comprovantes e exportação</td>
+            <td>Sinais tributários visíveis junto à obrigação</td>
           </tr>
           <tr>
             <td><span class="lvl">N2</span></td>
-            <td>Pedido vinculado ao documento esperado</td>
-            <td>CAP a partir de NFs e NFSes</td>
-            <td>Associação automática boleto ↔ doc</td>
-            <td>Workflow de aprovação básico</td>
-            <td>Pagamento pela plataforma · 6 bancos</td>
-            <td>Dashboard de acompanhamento de boletos</td>
-            <td>Travas de criação e movimentação de CAPs</td>
+            <td>CAP criada automaticamente a partir de NFe e NFSe</td>
+            <td>Associação automática boleto ↔ documento</td>
+            <td>Etiquetas, categorias e organização operacional</td>
+            <td>Workflow básico de aprovação</td>
+            <td>Pagamento iniciado pela Qive para boletos e bancos habilitados</td>
+            <td>Acompanhamento de status, comprovantes e evidências</td>
+            <td>Crédito previsto, liberado, pendente e divergências associados à obrigação</td>
           </tr>
           <tr>
             <td><span class="lvl">N3</span></td>
-            <td>Pedido gera obrigação financeira esperada</td>
-            <td>Integração com ERP · criação de CAPs</td>
-            <td>Sinalização automática de divergências</td>
-            <td>Automações na Gestão de pagamentos</td>
-            <td>Operação financeira integrada ao ERP</td>
-            <td>Painel de performance</td>
-            <td>Score de Risco Qive</td>
+            <td>Duplicata integrada ao universo da obrigação, com e sem correspondência fiscal</td>
+            <td>Divergências de valor, vencimento e titularidade sinalizadas automaticamente</td>
+            <td>Prazos, titularidade, aging e pendências orientam a fila</td>
+            <td>Aprovação multinível, alçadas e segregação</td>
+            <td>Multi-conta e multi-banco, com tratamento de falha, retry e comprovante</td>
+            <td>Confirmação de pagamento e conciliação automatizada</td>
+            <td>Contexto tributário e fornecedor suportam decisão de recolhimento e geração de RAD</td>
           </tr>
           <tr>
             <td><span class="lvl">N4</span></td>
-            <td>Integração com ERP para pedidos</td>
-            <td>Regras parametrizáveis para CAPs</td>
-            <td>Validação cruzada com ERP</td>
-            <td>Categorização via Etiquetas (CAP)</td>
-            <td>Amplo suporte de bancos</td>
-            <td>Confirmação automática do pagamento</td>
-            <td>Registro detalhado de todas as ações</td>
+            <td>Novas origens: CT-e, utilities, impostos, documentos específicos e sincronização ERP</td>
+            <td>Validação cruzada Duplicata × fiscal × boleto × ERP</td>
+            <td>Priorização por impacto, urgência e exposição</td>
+            <td>Aprovação integrada a ERP, contas bancárias e políticas</td>
+            <td>Amplo suporte bancário, ERP e alto volume</td>
+            <td>Conciliação ponta a ponta da obrigação, pagamento e recolhimento, com audit trail</td>
+            <td>RAD executado e confirmado na jornada</td>
           </tr>
           <tr>
             <td><span class="lvl">N5</span></td>
-            <td>Pedido integrado ao CAP</td>
-            <td>CTe · Utilities · Impostos e doc. específicos</td>
-            <td>Cobertura ampliada de associações</td>
-            <td>Workflow de aprovação avançado</td>
-            <td>Pagamentos via Pix e TED</td>
-            <td>Compliance · Reforma Tributária</td>
-            <td>Autenticação de 2 fatores</td>
+            <td>Cobertura configurável e integrada do universo de obrigações, com regras por origem</td>
+            <td>Prontidão definida por regras e tratamento automático de exceções</td>
+            <td>Fila inteligente com recomendações e automação contextual</td>
+            <td>Autorização orquestrada por política, valor, entidade, conta e risco</td>
+            <td>Execução multirrail: boleto, Pix, TED e outros</td>
+            <td>Fechamento automático com reconciliação financeira e tributária</td>
+            <td>Split e recolhimento orquestrados com pagamento, regras e reconciliação</td>
           </tr>
         </tbody>
       </table>
@@ -8228,20 +8228,20 @@ let stratChart = null;
 
 const STRAT_DATA = {
   labels: [
-    'Requisição\ne pedido',
-    'Recebimento\nde Documentos',
-    'Associação\ne conferência',
-    'Aprovação\ne organização',
-    'Pagamentos',
-    'Reconciliação\ne Auditoria',
-    'Segurança'
+    'Formação e\nCobertura',
+    'Associação\ne Validação',
+    'Organização\ne Priorização',
+    'Aprovação\ne Autorização',
+    'Execução\nFinanceira',
+    'Liquidação\ne Conciliação',
+    'Reforma\nTributária'
   ],
   quarters: [
-    { label: '2025',              data: [1,1,3,1,1,2,0], solid: true,  color: '#94a3b8' },
-    { label: 'Q1/2026',           data: [1,2,3,2,1,2,1], solid: true,  color: '#3b82f6' },
-    { label: 'Q2/2026',           data: [1,2,3,3,2,4,1], solid: true,  color: '#10b981' },
-    { label: 'Q3/2026 (Plan.)',   data: [1,3,4,3,3,5,2], solid: false, color: '#f59e0b' },
-    { label: 'Q4/2026',           data: [1,4,4,4,4,5,3], solid: false, color: '#a78bfa' },
+    { label: '2025',                 data: [1,1,1,0,1,1,0], solid: true,  color: '#94a3b8' },
+    { label: 'Q1/2026',              data: [2,2,1,1,1,1,0], solid: true,  color: '#3b82f6' },
+    { label: 'Q2/2026',              data: [2,2,2,1,1,2,0], solid: true,  color: '#10b981' },
+    { label: 'Q3/2026',              data: [2,3,2,2,2,2,1], solid: true,  color: '#f59e0b' },
+    { label: 'Q4/2026 (Proposta)',   data: [3,3,3,2,2,3,2], solid: false, color: '#a78bfa' },
   ]
 };
 
